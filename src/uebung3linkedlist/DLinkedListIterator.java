@@ -21,7 +21,7 @@ class DLinkedListIterator<T> implements IListIterator<T> {
 
     @Override
     public boolean hasNext() {
-        return (item.next.isDummy) ? false : true;
+        return (!item.next.isDummy);
     }
 
     @Override

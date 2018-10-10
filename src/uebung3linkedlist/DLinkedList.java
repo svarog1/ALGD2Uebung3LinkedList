@@ -19,7 +19,6 @@ import java.util.function.Consumer;
  */
 public class DLinkedList<E> implements IList<E> {
 
-    
     public DLinkedList() {
         this.dummyElement = new ListItem<>();
         this.dummyElement.previous = this.dummyElement;
@@ -53,14 +52,7 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public Iterator<E> iterator() {
-
-        if (!this.isEmpty()) {
-            return new DLinkedListIterator<>(this.dummyElement);
-        } else {
-            assert this.isEmpty() : "The list ist Empty";
-            return null;
-        }
-
+        return new DLinkedListIterator<>(this.dummyElement);
     }
 
     @Override
@@ -198,7 +190,13 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem head() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.isEmpty()) {
+            assert this.isEmpty() : "Ther is no head element in an empty DLinkedList";
+            return null;
+        } else {
+            return this.dummyElement.next;
+        }
+
     }
 
     @Override
@@ -213,7 +211,12 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem next(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (item.next.isDummy) {
+            assert item.next.isDummy : "Ther is no next element in this ListItem.";
+            return null;
+        } else {
+            return item.next;
+        }
     }
 
     @Override
@@ -223,7 +226,7 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem cyclicNext(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.next(item);
     }
 
     @Override
@@ -243,7 +246,12 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public E get(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (item.getClass().equals(dummyElement.getClass())) {
+            return (E) item.element;
+        } else {
+            throw new IllegalStateException("The ListItem is not a list Item from this DLinkedList.");
+        }
+
     }
 
     @Override
@@ -253,17 +261,20 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public E remove(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        size--;
+        item.previous.next = item.next;
+        item.next.previous = item.previous;
+        return (E) item.element;
     }
 
     @Override
     public ListItem addHead(E data) {
-        if (this.isEmpty()) {
-            assert this.isEmpty() : "There is no head element in an empty DLinkedList";
-            return null;
-        } else {
-            return dummyElement.next;
-        }
+        ListItem<E> newHead = new ListItem(data);
+        newHead.previous = dummyElement;
+        newHead.next = dummyElement.next;
+        dummyElement.next.previous = newHead;
+        dummyElement.next = newHead;
+        return newHead;
     }
 
     @Override
@@ -291,7 +302,13 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem addBefore(ListItem item, E data) {
-       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates. 
+        size++;
+        ListItem<E> beforeItem = new ListItem<>(data);
+        beforeItem.next=item;
+        beforeItem.previous=item.previous;
+        item.previous.next=beforeItem;
+        item.previous=beforeItem;
+        return beforeItem;
     }
 
     @Override
