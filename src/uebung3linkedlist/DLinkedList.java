@@ -145,7 +145,9 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        dummyElement.next = dummyElement;
+        dummyElement.previous = dummyElement;
+        size = 0;
     }
 
     @Override
@@ -221,7 +223,11 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem previous(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (item.previous.isDummy) {
+            return null;
+        } else {
+            return item.previous;
+        }
     }
 
     @Override
@@ -236,16 +242,52 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem delete(ListItem item, boolean next) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        size--;
+        item.previous.next = item.next;
+        item.next.previous = item.previous;
+        if (next) {
+            if (item.next.isDummy) {
+                return null;
+            } else {
+                return item.next;
+            }
+        } else {
+            if (item.previous.isDummy) {
+                return null;
+            } else {
+                return item.previous;
+            }
+        }
+
     }
 
     @Override
     public ListItem cyclicDelete(ListItem item, boolean next) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        size--;
+        item.previous.next = item.next;
+        item.next.previous = item.previous;
+        if (next) {
+            if (item.isDummy && item.next.isDummy) {
+                return null;
+            } else if (item.next.isDummy) {
+                return item.next.next;
+            } else {
+                return item.next;
+            }
+        } else {
+            if (item.isDummy && item.previous.isDummy) {
+                return null;
+            } else if (item.previous.isDummy) {
+                return item.previous.previous;
+            } else {
+                return item.previous;
+            }
+        }
     }
 
     @Override
     public E get(ListItem item) {
+        assert this.contains(item.element) : "The item has to be in the list";
         if (item.getClass().equals(dummyElement.getClass())) {
             return (E) item.element;
         } else {
@@ -290,6 +332,9 @@ public class DLinkedList<E> implements IList<E> {
      */
     @Override
     public ListItem addAfter(ListItem item, E data) {
+        if (item == null) {
+            item = dummyElement;
+        }
         ListItem<E> nextItem = new ListItem<>();
         nextItem.setElement(data);
         nextItem.next = item.next;
@@ -297,43 +342,58 @@ public class DLinkedList<E> implements IList<E> {
         item.next.previous = nextItem;
         item.next = nextItem;
         size++;
-        return item;
+
+        return nextItem;
     }
 
     @Override
     public ListItem addBefore(ListItem item, E data) {
+        if (item == null) {
+            item = this.dummyElement;
+        }
         size++;
         ListItem<E> beforeItem = new ListItem<>(data);
-        beforeItem.next=item;
-        beforeItem.previous=item.previous;
-        item.previous.next=beforeItem;
-        item.previous=beforeItem;
+        beforeItem.next = item;
+        beforeItem.previous = item.previous;
+        item.previous.next = beforeItem;
+        item.previous = beforeItem;
         return beforeItem;
     }
 
     @Override
     public void moveToHead(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.remove(item);
+        this.addAfter(null, (E) item.element);
     }
 
     @Override
     public void moveToTail(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.remove(item);
+        this.addBefore(null, (E) item.element);
     }
 
     @Override
     public void rotate(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.remove(dummyElement);
+        dummyElement.next = item;
+        dummyElement.previous = item.previous;
+        item.previous.next = dummyElement;
+        item.previous = dummyElement;
+        size++;
     }
 
     @Override
     public void swap(ListItem item1, ListItem item2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        E temp = (E) item1.element;
+        item1.element = item2.element;
+        item2.element = temp;
+
     }
 
     @Override
     public void reverse() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.        
+
     }
 
     @Override

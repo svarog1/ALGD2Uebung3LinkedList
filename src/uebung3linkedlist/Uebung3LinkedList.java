@@ -19,10 +19,8 @@ public class Uebung3LinkedList {
         DLinkedList<Integer> dlnikList = new DLinkedList<>();
         dlnikList.add(1);
         dlnikList.add(2);
-        dlnikList.addBefore(dlnikList.tail(), 3);
-        
-        ListItem it = dlnikList.head();        
-        dlnikList.toArray();
+        dlnikList.add(3);
+        dlnikList.reverse();
     }
 
 }

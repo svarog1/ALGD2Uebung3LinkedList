@@ -14,7 +14,7 @@ public class ListItem<E> {
     ListItem() {
     }
 
-    public ListItem(E element) {
+    ListItem(E element) {
         this.element = element;
     }
 
