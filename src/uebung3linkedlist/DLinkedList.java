@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * @author santi
  * @param <E>
  */
-class DLinkedList<E> implements IList<E> {
+public class DLinkedList<E> implements IList<E> {
 
     ListItem<E> headElement;
     int size = 0;
@@ -85,6 +85,11 @@ class DLinkedList<E> implements IList<E> {
 
     @Override
     public boolean remove(Object o) {
+
+        if ( ListItem.class.isInstance(o)) {
+   //...
+            ;}
+        assert (o instanceof E || o instanceof ListItem<E>);
         for (E thi : this) {
             if (thi.equals(o)) {
 

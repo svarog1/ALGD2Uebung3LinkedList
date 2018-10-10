@@ -13,6 +13,7 @@ class ListItem<E> {
 
     public E element;
     ListItem<E> previous, next;
+    boolean isDummy=false;
 
     @Override
     public boolean equals(Object other) {
