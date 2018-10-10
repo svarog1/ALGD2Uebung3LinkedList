@@ -19,8 +19,16 @@ import java.util.function.Consumer;
  */
 public class DLinkedList<E> implements IList<E> {
 
-    ListItem<E> headElement;
-    int size = 0;
+    
+    public DLinkedList() {
+        this.dummyElement = new ListItem<>();
+        this.dummyElement.previous = this.dummyElement;
+        this.dummyElement.next = this.dummyElement;
+        this.dummyElement.isDummy = true;
+    }
+
+    private int size = 0;
+    ListItem<E> dummyElement;
 
     @Override
     public int size() {
@@ -29,11 +37,7 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public boolean isEmpty() {
-        if (headElement == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return dummyElement.next.isDummy; //When the dummy element follow it self then there are no Elements in the LinkedList.        
     }
 
     @Override
@@ -49,7 +53,14 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return new DLinkedListIterator<>(headElement);
+
+        if (!this.isEmpty()) {
+            return new DLinkedListIterator<>(this.dummyElement);
+        } else {
+            assert this.isEmpty() : "The list ist Empty";
+            return null;
+        }
+
     }
 
     @Override
@@ -70,38 +81,48 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public boolean add(E e) {
-        if (this.headElement == null) {
-            this.addHead(e);
+        if (this.isEmpty()) {
+            return (this.addAfter(dummyElement, e) != null);
         } else {
-            ListItem<E> item = new ListItem<>();
-            item.element = e;
-            ListItem<E> tail = this.tail();
-            tail.next = item;
-            item.previous = tail;
+            return (this.addAfter(this.tail(), e) != null);
         }
-        this.size++;
-        return true;
+
     }
 
     @Override
     public boolean remove(Object o) {
 
-        if ( ListItem.class.isInstance(o)) {
-   //...
-            ;}
-        assert (o instanceof E || o instanceof ListItem<E>);
-        for (E thi : this) {
-            if (thi.equals(o)) {
+        if (this.isEmpty()) {
+            assert this.isEmpty() : "You can not remove a item from an Empty list.";
+            return false;
+        } else if (dummyElement.getClass().equals(o.getClass())) { //The object o is from the class ListItem.
+            DLinkedListIterator<E> iterator = new DLinkedListIterator<>(dummyElement);
+            DLinkedListIterator<E> i;
+            for (i = iterator; i.hasNext();) {
+                if (i.item.equals(o)) {
+                    i.remove();
+                    size--;
+                    return true;
+                }
+            }
+            return false;
 
+        } else if (this.dummyElement.next.getElement().getClass().equals(o.getClass())) {//The object o is from the class E.
+            ListItem<E> item = new ListItem<>((E) o);
+            DLinkedListIterator<E> iterator = new DLinkedListIterator<>(dummyElement);
+            DLinkedListIterator<E> i;
+            for (i = iterator; i.hasNext();) {
+                if (i.item.equals(o)) {
+                    i.remove();
+                    size--;
+                    return true;
+                }
             }
-        }
-        DLinkedListIterator<E> iterator = new DLinkedListIterator<>(headElement);
-        DLinkedListIterator<E> i;
-        for (i = iterator; i.hasNext();) {
-            if (i.equals(o)) {
-                i.remove();
-                break;
-            }
+            return false;
+
+        } else {
+            assert true : "The Object need to be from class E or a ListItem";
+            return false;
         }
     }
 
@@ -182,17 +203,11 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem tail() {
-        if (headElement == null) {
-            throw new IllegalStateException("No head element.");
-        } else if (headElement.next == null) {
-            return headElement;
+        if (this.isEmpty()) {
+            assert this.isEmpty() : "Ther is no tail element in an empty DLinkedList";
+            return null;
         } else {
-            DLinkedListIterator<E> iterator = new DLinkedListIterator<>(headElement);
-            DLinkedListIterator<E> i;
-            for (i = iterator; i.hasNext();) {
-                i.next();
-            }
-            return i.item;
+            return this.dummyElement.previous;
         }
     }
 
@@ -243,16 +258,12 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public ListItem addHead(E data) {
-        ListItem<E> headItem = new ListItem<>();
-        headItem.element = data;
-        if (headElement == null) {
-            this.headElement = headItem;
+        if (this.isEmpty()) {
+            assert this.isEmpty() : "There is no head element in an empty DLinkedList";
+            return null;
         } else {
-            headItem.next = this.headElement;
-            this.headElement = headItem;
+            return dummyElement.next;
         }
-        this.size++;
-        return headItem;
     }
 
     @Override
@@ -260,23 +271,27 @@ public class DLinkedList<E> implements IList<E> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     * @param item
+     * @param data
+     * @return the new list Element with the new data.
+     */
     @Override
     public ListItem addAfter(ListItem item, E data) {
         ListItem<E> nextItem = new ListItem<>();
-        nextItem.element = data;
-        if (item.next == null) {
-            item.next = nextItem;
-        } else {
-            nextItem.next = item.next;
-            item.next = nextItem;
-        }
-        this.size++;
-        return nextItem;
+        nextItem.setElement(data);
+        nextItem.next = item.next;
+        nextItem.previous = item;
+        item.next.previous = nextItem;
+        item.next = nextItem;
+        size++;
+        return item;
     }
 
     @Override
     public ListItem addBefore(ListItem item, E data) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates. 
     }
 
     @Override
@@ -326,7 +341,11 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public IListIterator<E> listIterator() {
-        DLinkedListIterator<E> dli = new DLinkedListIterator<E>(headElement);
+        if (isEmpty()) {
+            assert isEmpty() : "The list needs elements first.";
+            return null;
+        }
+        DLinkedListIterator<E> dli = new DLinkedListIterator<>(this.dummyElement);
         return dli;
     }
 

@@ -21,33 +21,36 @@ class DLinkedListIterator<T> implements IListIterator<T> {
 
     @Override
     public boolean hasNext() {
-        if (item.next == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return (item.next.isDummy) ? false : true;
     }
 
     @Override
     public T next() {
-        T value=this.item.element;
-        this.item = this.item.next;
-        return value;
+        if (this.hasNext()) {
+            this.item = this.item.next;
+            return this.item.element;
+        } else {
+            assert !this.hasNext() : "There is no next element it ist der dummy element.";
+            return null;
+        }
+
     }
 
     @Override
     public boolean hasPrevious() {
-        if (item.previous == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return (item.previous.isDummy) ? false : true;
+
     }
 
     @Override
     public T previous() {
-        this.item = this.item.previous;
-        return this.item.element;
+        if (this.hasPrevious()) {
+            this.item = this.item.previous;
+            return this.item.element;
+        } else {
+            assert !this.hasNext() : "There is no previous element it ist der dummy element.";
+            return null;
+        }
     }
 
     @Override
@@ -62,22 +65,17 @@ class DLinkedListIterator<T> implements IListIterator<T> {
 
     @Override
     public void remove() {
-        if (item.previous != null && item.next != null) {
-            item.previous.next = item.next;
-            item.next.previous = item.previous;
-        } else if (item.previous == null) {
-            item.element = item.next.element;
-            item.next = item.next.next;
-        } else if (item.next == null) {
-            item = item.previous;
-            item.next = null;
+        if (item.isDummy) {
+            throw new IllegalStateException("It should not be possible to remove the dummy ListItem.");
+        } else {
+            item.previous.next = item.next.previous;
+            item.next.previous = item.previous.next;
         }
-
     }
 
     @Override
     public void set(T e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        item.element=e;
     }
 
     @Override
@@ -89,11 +87,10 @@ class DLinkedListIterator<T> implements IListIterator<T> {
     public ListItem getVisited() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
-    public boolean equals(Object o)
-    {
-    item.equals(o);
+    public boolean equals(Object o) {
+        return item.equals(o);
     }
 
 }

@@ -9,14 +9,35 @@ package uebung3linkedlist;
  *
  * @author santi
  */
-class ListItem<E> {
+public class ListItem<E> {
 
-    public E element;
+    ListItem() {
+    }
+
+    public ListItem(E element) {
+        this.element = element;
+    }
+
+    E element;
     ListItem<E> previous, next;
-    boolean isDummy=false;
+    boolean isDummy = false;
 
     @Override
     public boolean equals(Object other) {
-        return element.equals(other);
+        return getElement().equals(other);
+    }
+
+    /**
+     * @return the element
+     */
+    public E getElement() {
+        return element;
+    }
+
+    /**
+     * @param element the element to set
+     */
+    public void setElement(E element) {
+        this.element = element;
     }
 }
