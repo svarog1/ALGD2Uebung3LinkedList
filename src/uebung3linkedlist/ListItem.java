@@ -10,7 +10,12 @@ package uebung3linkedlist;
  * @author santi
  */
 class ListItem<E> {
-    
+
     public E element;
-    public ListItem<E> previous,next;    
+    ListItem<E> previous, next;
+
+    @Override
+    public boolean equals(Object other) {
+        return element.equals(other);
+    }
 }

@@ -29,12 +29,22 @@ class DLinkedList<E> implements IList<E> {
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (headElement == null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean contains(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (E element : this) {
+            if (element.equals(o)) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     @Override
@@ -44,12 +54,18 @@ class DLinkedList<E> implements IList<E> {
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Object[] ob = new Object[size];
+        int counter = 0;
+        for (E thi : this) {
+            ob[counter] = thi;
+            counter++;
+        }
+        return ob;
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return a;
     }
 
     @Override
@@ -59,16 +75,29 @@ class DLinkedList<E> implements IList<E> {
         } else {
             ListItem<E> item = new ListItem<>();
             item.element = e;
-            ListItem<E> tail=this.tail();
-            tail.next=item;
-            item.previous=tail;
+            ListItem<E> tail = this.tail();
+            tail.next = item;
+            item.previous = tail;
         }
+        this.size++;
         return true;
     }
 
     @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (E thi : this) {
+            if (thi.equals(o)) {
+
+            }
+        }
+        DLinkedListIterator<E> iterator = new DLinkedListIterator<>(headElement);
+        DLinkedListIterator<E> i;
+        for (i = iterator; i.hasNext();) {
+            if (i.equals(o)) {
+                i.remove();
+                break;
+            }
+        }
     }
 
     @Override
@@ -154,16 +183,12 @@ class DLinkedList<E> implements IList<E> {
             return headElement;
         } else {
             DLinkedListIterator<E> iterator = new DLinkedListIterator<>(headElement);
-
-            for (E thi : this) {
-                System.out.println(thi);
-            }
             DLinkedListIterator<E> i;
-            for ( i = iterator; i.hasNext();) {
+            for (i = iterator; i.hasNext();) {
                 i.next();
             }
             return i.item;
-        }        
+        }
     }
 
     @Override
@@ -221,6 +246,7 @@ class DLinkedList<E> implements IList<E> {
             headItem.next = this.headElement;
             this.headElement = headItem;
         }
+        this.size++;
         return headItem;
     }
 
@@ -239,6 +265,7 @@ class DLinkedList<E> implements IList<E> {
             nextItem.next = item.next;
             item.next = nextItem;
         }
+        this.size++;
         return nextItem;
     }
 
