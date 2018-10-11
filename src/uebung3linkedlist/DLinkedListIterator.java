@@ -5,8 +5,7 @@
  */
 package uebung3linkedlist;
 
-import java.util.Iterator;
-import java.util.ListIterator;
+import java.util.Objects;
 
 /**
  *
@@ -14,10 +13,13 @@ import java.util.ListIterator;
  */
 class DLinkedListIterator<T> implements IListIterator<T> {
 
-    public DLinkedListIterator(ListItem<T> startelement) {
-        this.item = startelement;
+    private final DLinkedList<T> list;
+    private ListItem<T> item;
+
+    public DLinkedListIterator(DLinkedList<T> list) {
+        this.list = list;
+        this.item = list.dummyElement;
     }
-    ListItem<T> item;
 
     @Override
     public boolean hasNext() {
@@ -30,15 +32,14 @@ class DLinkedListIterator<T> implements IListIterator<T> {
             this.item = this.item.next;
             return this.item.element;
         } else {
-            assert !this.hasNext() : "There is no next element it ist der dummy element.";
+            assert !this.hasNext() : "There is no next element in the list.";
             return null;
         }
-
     }
 
     @Override
     public boolean hasPrevious() {
-        return (item.previous.isDummy) ? false : true;
+        return !(item.previous.isDummy);
 
     }
 
@@ -48,7 +49,7 @@ class DLinkedListIterator<T> implements IListIterator<T> {
             this.item = this.item.previous;
             return this.item.element;
         } else {
-            assert !this.hasNext() : "There is no previous element it ist der dummy element.";
+            assert !this.hasPrevious() : "There is no previous element it ist der dummy element.";
             return null;
         }
     }
@@ -68,29 +69,29 @@ class DLinkedListIterator<T> implements IListIterator<T> {
         if (item.isDummy) {
             throw new IllegalStateException("It should not be possible to remove the dummy ListItem.");
         } else {
-            item.previous.next = item.next.previous;
-            item.next.previous = item.previous.next;
+            list.remove(item);
         }
     }
 
     @Override
     public void set(T e) {
-        item.element=e;
+        list.set(item, e);
     }
 
     @Override
     public void add(T e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (e != null) {
+            list.addAfter(item, e);
+        }
     }
 
     @Override
     public ListItem getVisited() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return item;
     }
 
     @Override
     public boolean equals(Object o) {
         return item.equals(o);
     }
-
 }

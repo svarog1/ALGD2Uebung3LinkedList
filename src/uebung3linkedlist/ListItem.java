@@ -24,7 +24,11 @@ public class ListItem<E> {
 
     @Override
     public boolean equals(Object other) {
-        return getElement().equals(other);
+        E el = getElement();
+        if (el == null) {
+            return false;
+        }
+        return el.equals(other);
     }
 
     /**
