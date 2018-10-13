@@ -91,11 +91,7 @@ public class DLinkedList<E> implements IList<E> {
         if (e == null) {
             return false;
         }
-        if (this.isEmpty()) {
-            return (this.addAfter(dummyElement, e) != null);
-        } else {
-            return (this.addAfter(this.tail(), e) != null);
-        }
+        return (this.addAfter(this.tail(), e) != null);
     }
 
     @Override
@@ -150,7 +146,7 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Too slow to implement.");
     }
 
     @Override
@@ -207,7 +203,15 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public boolean checkMembership(ListItem item) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        DLinkedListIterator<E> it = new DLinkedListIterator<>(this);
+        E element = it.next();
+        while (element != null) {
+            if (element == item) {
+                return true;
+            }
+            element = it.next();
+        }
+        return false;
     }
 
     @Override
@@ -274,19 +278,10 @@ public class DLinkedList<E> implements IList<E> {
         item.previous.next = item.next;
         item.next.previous = item.previous;
         if (next) {
-            if (item.next.isDummy) {
-                return null;
-            } else {
-                return item.next;
-            }
+            return this.next(item);
         } else {
-            if (item.previous.isDummy) {
-                return null;
-            } else {
-                return item.previous;
-            }
+            return this.previous(item);
         }
-
     }
 
     @Override
@@ -294,28 +289,19 @@ public class DLinkedList<E> implements IList<E> {
         size--;
         item.previous.next = item.next;
         item.next.previous = item.previous;
+        if (this.isEmpty()) {
+            return null;
+        }
         if (next) {
-            if (item.isDummy && item.next.isDummy) {
-                return null;
-            } else if (item.next.isDummy) {
-                return item.next.next;
-            } else {
-                return item.next;
-            }
+            return this.cyclicNext(item);
         } else {
-            if (item.isDummy && item.previous.isDummy) {
-                return null;
-            } else if (item.previous.isDummy) {
-                return item.previous.previous;
-            } else {
-                return item.previous;
-            }
+            return this.cyclicPrevious(item);
         }
     }
 
     @Override
     public E get(ListItem item) {
-        //assert this.contains(item.element) : "The item has to be in the list";
+        //assert this.contains(item.element) : "The item has to be in the list"; // Dauert O(n)
         if (item.getClass().equals(dummyElement.getClass())) {
             return (E) item.element;
         } else {
@@ -330,9 +316,10 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public E remove(ListItem item) {
-        size--;
         item.previous.next = item.next;
         item.next.previous = item.previous;
+
+        size--;
         return (E) item.element;
     }
 
@@ -343,6 +330,8 @@ public class DLinkedList<E> implements IList<E> {
         newHead.next = dummyElement.next;
         dummyElement.next.previous = newHead;
         dummyElement.next = newHead;
+        size++;
+
         return newHead;
     }
 
@@ -353,6 +342,8 @@ public class DLinkedList<E> implements IList<E> {
         newTail.next = dummyElement;
         dummyElement.previous.next = newTail;
         dummyElement.previous = newTail;
+        size++;
+
         return newTail;
     }
 
@@ -367,8 +358,7 @@ public class DLinkedList<E> implements IList<E> {
         if (item == null) {
             item = dummyElement;
         }
-        ListItem<E> nextItem = new ListItem<>();
-        nextItem.setElement(data);
+        ListItem<E> nextItem = new ListItem<>(data);
         nextItem.next = item.next;
         nextItem.previous = item;
         item.next.previous = nextItem;
@@ -389,6 +379,7 @@ public class DLinkedList<E> implements IList<E> {
         item.previous.next = beforeItem;
         item.previous = beforeItem;
         size++;
+
         return beforeItem;
     }
 
@@ -406,12 +397,16 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public void rotate(ListItem item) {
-        this.remove(dummyElement);
+        if (item == dummyElement.next) {
+            return;
+        }
+        dummyElement.next.previous = dummyElement.previous;
+        dummyElement.previous.next = dummyElement.next;
         dummyElement.next = item;
         dummyElement.previous = item.previous;
+
         item.previous.next = dummyElement;
         item.previous = dummyElement;
-        size++;
     }
 
     @Override
@@ -423,8 +418,16 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public void reverse() {
-        throw new UnsupportedOperationException("Not supported yet.");
-
+        if (isEmpty()) {
+            return;
+        }
+        ListItem nextItem = dummyElement;
+        do {
+            ListItem next = nextItem.next;
+            nextItem.next = nextItem.previous;
+            nextItem.previous = next;
+            nextItem = next;
+        } while (nextItem.getElement() != null);
     }
 
     @Override
@@ -438,9 +441,8 @@ public class DLinkedList<E> implements IList<E> {
 
     @Override
     public void addBefore(ListItem item, List<E> list) {
-        ListItem next = item;
         for (E element : list) {
-            next = addBefore(next, element);
+            addBefore(item, element);
         }
         list.clear();
     }
@@ -448,21 +450,29 @@ public class DLinkedList<E> implements IList<E> {
     @Override
     public void conc(List<E> list, boolean after) {
         if (after) {
-            addAfter(null, list);
-        } else {
             addBefore(null, list);
+        } else {
+            addAfter(null, list);
         }
-        list.clear();
     }
 
     @Override
     public IList<E> remove(ListItem startInclusive, ListItem endExclusive) {
+        if (this.isEmpty()) {
+            return new DLinkedList<>();
+        }
         ListItem itemToDelete = startInclusive;
+        if (itemToDelete == null) {
+            itemToDelete = dummyElement.next;
+        }
+        if (endExclusive == null) {
+            endExclusive = dummyElement.next;
+        }
         DLinkedList<E> deletedItems = new DLinkedList<>();
         do {
             deletedItems.add((E) itemToDelete.getElement());
             remove(itemToDelete);
-            itemToDelete = itemToDelete.next;
+            itemToDelete = this.cyclicNext(itemToDelete);
         } while (itemToDelete != endExclusive);
         return deletedItems;
     }
