@@ -22,6 +22,11 @@ public class ListItem<E> {
     ListItem<E> previous, next;
     boolean isDummy = false;
 
+    /**
+     * Execution time:  O(1).
+     * @param other     Object to check for equality.
+     * @return          Wether the object is equal to this ListItem.
+     */
     @Override
     public boolean equals(Object other) {
         E el = getElement();
@@ -32,14 +37,16 @@ public class ListItem<E> {
     }
 
     /**
-     * @return the element
+     * Execution time:  O(1).
+     * @return          The element
      */
     public E getElement() {
         return element;
     }
 
     /**
-     * @param element the element to set
+     * Execution time:  O(1).
+     * @param element   The element to set
      */
     public void setElement(E element) {
         this.element = element;
