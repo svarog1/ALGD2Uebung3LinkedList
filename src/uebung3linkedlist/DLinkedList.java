@@ -46,17 +46,19 @@ public class DLinkedList<E> implements IList<E> {
     
     /**
      * Execution time:  O(n).
-     * @param o         Can be null.
+     * @throws          NullPointerException
+     * @param o         Check for existance in list.
      * @return          Wether the object is inside the list.
     */
     @Override
     public boolean contains(Object o) {
         if (o == null) {
-            return false;
+            throw new NullPointerException("Can't check null for existance in the list.");
         }
 
         Iterator it = iterator();
         Object obj = it.next();
+        
         while (obj != null) {
             if (obj.equals(o)) {
                 return true;
@@ -102,33 +104,35 @@ public class DLinkedList<E> implements IList<E> {
     
     /**
      * Execution time:  O(1).
+     * @throws          NullPointerException
      * @param e         Data that is going to be inside the list element. 
-     *                  Can be null.
      * @return          The success of the addition.
      */
     @Override
     public boolean add(E e) {
-        if (e == null) {
-            return false;
+        if (e == null || (this.addAfter(this.tail(), e) == null)) {
+            throw new NullPointerException("Can't add null to list.");
         }
-        return (this.addAfter(this.tail(), e) != null);
+        
+        return true;
     }
 
     /**
      * Execution time:  O(n).
-     * Precondition:    o can be null, from the type E and the list can't be empty.
+     * Precondition:    o can't be null, must be from type E and the list can't be empty.
+     * @throws          NullPointerException
+     * @throws          IllegalStateException
      * @param o         Will be removed.
      * @return          The success of the removal of the object.
      */
     @Override
     public boolean remove(Object o) {
         if (o == null) {
-            return false;
+            throw new NullPointerException("Can't remove null from list.");
         }
 
         if (this.isEmpty()) {
-            assert this.isEmpty() : "You can not remove a item from an Empty list.";
-            return false;
+            throw new IllegalStateException("You can not remove an item from an Empty list.");
         } else if (dummyElement.getClass().equals(o.getClass())) { //The object o is from the class ListItem.
             DLinkedListIterator<E> iterator = new DLinkedListIterator<>(this);
             DLinkedListIterator<E> i;
@@ -155,8 +159,7 @@ public class DLinkedList<E> implements IList<E> {
             return false;
 
         } else {
-            assert true : "The Object need to be from class E or a ListItem";
-            return false;
+            throw new IllegalStateException("The Object need to be from class E or a ListItem");
         }
     }
 
@@ -232,12 +235,15 @@ public class DLinkedList<E> implements IList<E> {
     
     /**
      * Execution time:  O(n)
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item      Item that should be checked for membership. 
-     *                  Can be null.
      * @return          True if item is a member of this list.
      */
     @Override
     public boolean checkMembership(ListItem item) {
+        if(item == null) throw new NullPointerException("Can't check for membership of null.");
+        
         DLinkedListIterator<E> it = new DLinkedListIterator<>(this);
         E element = it.next();
         while (element != null) {
@@ -251,13 +257,11 @@ public class DLinkedList<E> implements IList<E> {
     
     /**
      * Execution time:  O(1).
-     * Precondition:    List can't be empty.
      * @return          The head element of the linked list.
      */
     @Override
     public ListItem head() {
         if (this.isEmpty()) {
-            assert this.isEmpty() : "There is no head element in an empty DLinkedList";
             return null;
         } else {
             return this.dummyElement.next;
@@ -266,13 +270,11 @@ public class DLinkedList<E> implements IList<E> {
     
     /**
      * Execution time:  O(1).
-     * Precondition:    List can't be empty.
      * @return          The tail of the linked list.
      */
     @Override
     public ListItem tail() {
         if (this.isEmpty()) {
-            assert this.isEmpty() : "There is no tail element in an empty DLinkedList";
             return null;
         } else {
             return this.dummyElement.previous;
@@ -281,14 +283,12 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
-     * Precondition:    ListItem can't be tail.
      * @param item      
      * @return          The next element in the list after item.
      */
     @Override
     public ListItem next(ListItem item) {
         if (item.next.isDummy) {
-            assert item.next.isDummy : "There is no next element in this ListItem.";
             return null;
         } else {
             return item.next;
@@ -304,7 +304,6 @@ public class DLinkedList<E> implements IList<E> {
     @Override
     public ListItem previous(ListItem item) {
         if (item.previous.isDummy) {
-            assert item.previous.isDummy : "There is no previous element in this ListItem.";
             return null;
         } else {
             return item.previous;
@@ -313,7 +312,7 @@ public class DLinkedList<E> implements IList<E> {
     
     /**
      * Execution time:  O(1).
-     * @param item
+     * @param item      Can be null.
      * @return          The next item in the list after item. 
      *                  If item is tail, head will be returned. 
      */
@@ -328,7 +327,7 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
-     * @param item
+     * @param item      Can be null.
      * @return          The previous item in the list before item. 
      *                  If item is head, tail will be returned.
      */
@@ -343,6 +342,8 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item
      * @param next 
      * @return          The item next or previous of the deleted item. 
@@ -350,6 +351,8 @@ public class DLinkedList<E> implements IList<E> {
      */
     @Override
     public ListItem delete(ListItem item, boolean next) {
+        if(item == null) throw new NullPointerException("Can't delete null.");
+        
         size--;
         item.previous.next = item.next;
         item.next.previous = item.previous;
@@ -362,12 +365,16 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item
      * @param next
      * @return          The item next or previous of the deleted item.
      */
     @Override
     public ListItem cyclicDelete(ListItem item, boolean next) {
+        if(item == null) throw new NullPointerException("Can't delete null.");
+        
         size--;
         item.previous.next = item.next;
         item.next.previous = item.previous;
@@ -384,13 +391,16 @@ public class DLinkedList<E> implements IList<E> {
     /**
      * Execution time:  O(1).
      * Precondition:    ListItem must be from this DLinkedList.
+     *                  ListItem can't be null.
      * @throws          IllegalStateException
+     * @throws          NullPointerException
      * @param item
      * @return          The data of the item.
      */
     @Override
     public E get(ListItem item) {
-        //assert this.contains(item.element) : "The item has to be in the list"; // Dauert O(n)
+        if(item == null) throw new NullPointerException("Can't get data of null.");
+        
         if (item.getClass().equals(dummyElement.getClass())) {
             return (E) item.element;
         } else {
@@ -400,21 +410,27 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item      
      * @param data      Data that should be set to the item.
      */
     @Override
     public void set(ListItem item, E data) {
+        if(item == null) throw new NullPointerException("Can't set data to null.");
         item.element = data;
     }
 
     /**
      * Execution time:  O(1).
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item      The item that should be removed.
      * @return          Data of deleted element.
      */
     @Override
     public E remove(ListItem item) {
+        if(item == null) throw new NullPointerException("Can't remove null from list.");
         item.previous.next = item.next;
         item.next.previous = item.previous;
 
@@ -501,30 +517,40 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item      The item that will be the new head.
      */
     @Override
     public void moveToHead(ListItem item) {
+        if(item == null) throw new NullPointerException("Can't move null to head.");
         this.remove(item);
         this.addAfter(null, (E) item.element);
     }
     
     /**
      * Execution time:  O(1).
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item      The item that will be the new tail.
      */
     @Override
     public void moveToTail(ListItem item) {
+        if(item == null) throw new NullPointerException("Can't move null to tail.");
         this.remove(item);
         this.addBefore(null, (E) item.element);
     }
     
     /**
      * Execution time:  O(1).
+     * Precondition:    Item can't be null.
+     * @throws          NullPointerException
      * @param item      ListItem that should be rotated.
      */
     @Override
     public void rotate(ListItem item) {
+        if(item == null) throw new NullPointerException("Can't rotate null.");
+        
         if (item == dummyElement.next) {
             return;
         }
@@ -539,11 +565,14 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
+     * Precondition:    Item1 or Item2 can't be null.
+     * @throws          NullPointerException
      * @param item1     Item1 to swap.
      * @param item2     Item2 to swap.
      */
     @Override
     public void swap(ListItem item1, ListItem item2) {
+        if(item1 == null || item2 == null) throw new NullPointerException("Can't swap null.");
         E temp = (E) item1.element;
         item1.element = item2.element;
         item2.element = temp;
@@ -568,11 +597,15 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(n).
+     * Precondition:    Item or List can't be null.
+     * @throws          NullPointerException
      * @param item
      * @param list      List to add after item.
      */
     @Override
     public void addAfter(ListItem item, List<E> list) {
+        if(list == null) throw new NullPointerException("Can't add null after item.");
+        
         ListItem prev = item;
         for (E element : list) {
             prev = addAfter(prev, element);
@@ -582,11 +615,14 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(n).
+     * Precondition:    Item or list can't be null.
+     * @throws          NullPointerException
      * @param item
      * @param list      List to add before item.
      */
     @Override
     public void addBefore(ListItem item, List<E> list) {
+        if(list == null) throw new NullPointerException("Can't add null before item.");
         for (E element : list) {
             addBefore(item, element);
         }
@@ -594,13 +630,16 @@ public class DLinkedList<E> implements IList<E> {
     }
 
     /**
-     * 
+     * Execution time:  O(n)
+     * Precondition:    List can't be null.
+     * @throws          NullPointerException
      * @param list      List to concatenate with this list.
      * @param after     Wether the list should be concatenated at the 
      *                  end or at the beginning of this list.
      */
     @Override
     public void conc(List<E> list, boolean after) {
+        if(list == null) throw new NullPointerException("Can't concatenate null to this list.");
         if (after) {
             addBefore(null, list);
         } else {
@@ -610,8 +649,8 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:          O(n).
-     * @param startInclusive
-     * @param endExclusive
+     * @param startInclusive    Can be null.
+     * @param endExclusive      Can be null.
      * @return                  List of deleted ListItems.
      */
     @Override
@@ -637,13 +676,11 @@ public class DLinkedList<E> implements IList<E> {
 
     /**
      * Execution time:  O(1).
-     * Precondition:    The list can't be empty.
      * @return          New DLinkedListIterator.
      */
     @Override
     public IListIterator<E> listIterator() {
         if (isEmpty()) {
-            assert this.isEmpty() : "The list needs elements first.";
             return null;
         }
         return new DLinkedListIterator<>(this);

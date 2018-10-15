@@ -39,7 +39,6 @@ class DLinkedListIterator<T> implements IListIterator<T> {
             this.item = this.item.next;
             return this.item.element;
         } else {
-            assert !this.hasNext() : "There is no next element in the list.";
             return null;
         }
     }
@@ -65,7 +64,7 @@ class DLinkedListIterator<T> implements IListIterator<T> {
             this.item = this.item.previous;
             return this.item.element;
         } else {
-            assert !this.hasPrevious() : "There is no previous element it ist der dummy element.";
+            assert this.hasPrevious() : "There is no previous element it ist der dummy element.";
             return null;
         }
     }
@@ -129,6 +128,10 @@ class DLinkedListIterator<T> implements IListIterator<T> {
      */
     @Override
     public boolean equals(Object o) {
+        if(o == null){
+            return false;
+        }
+        
         return item.equals(o);
     }
 }
