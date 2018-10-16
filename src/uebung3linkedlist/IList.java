@@ -16,7 +16,7 @@ public interface IList<E> extends List<E> {
 	boolean checkMembership(ListItem item);
 	
 	/**
-	 * @return the first item or nufll if the list is empty
+	 * @return the first item or null if the list is empty
 	 */
 	ListItem head();
 	
