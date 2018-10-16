@@ -141,18 +141,16 @@ public class DLinkedList<E> implements IList<E> {
                 return false;
             }
         } else if (this.dummyElement.next.getElement().getClass().equals(o.getClass())) {//The object o is from the class E.
-            ListItem<E> item = new ListItem<>((E) o);
-            DLinkedListIterator<E> iterator = new DLinkedListIterator<>(this);
-            DLinkedListIterator<E> i;
-            for (i = iterator; i.hasNext();) {
-                if (i.getVisited().equals(o)) {
-                    i.remove();
-                    size--;
+            DLinkedListIterator<E> it = new DLinkedListIterator<>(this);
+            E element = it.next();
+            while (element != null) {
+                if (element.equals(o)) {
+                    it.remove();
                     return true;
                 }
+                element = it.next();
             }
             return false;
-
         } else {
             throw new IllegalStateException("The Object need to be from class E or a ListItem");
         }
