@@ -163,9 +163,21 @@ public class DLinkedList<E> implements IList<E> {
         }
     }
 
+    /**
+     * Execution time:  O(n^2)
+     * Precondition:    Collection can't be null.
+     * @throws          NullPointerException
+     * @param c
+     * @return          Wether all items in the Collection are inside the list.
+     */
     @Override
     public boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Not implemented for DLinkList.");
+        if(c == null) throw new NullPointerException("Can't check if null is in the list.");
+        for(Object i : c){
+            if(!this.contains((E) i)) return false;
+        }
+        
+        return true;
     }
 
     @Override

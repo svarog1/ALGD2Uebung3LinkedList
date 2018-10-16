@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import algd2.Clock;
+import java.util.ArrayList;
 
 public class DLinkedListTest1 {
 
@@ -66,6 +67,8 @@ public class DLinkedListTest1 {
 
         equals();
     }
+    
+    
 
     @SuppressWarnings("unused")
     @Test
@@ -84,7 +87,7 @@ public class DLinkedListTest1 {
         list1.get(it);
         clock.stop();
         System.out.println(clock);
-
+        
         clock.start();
         ListIterator<Integer> itr = list2.listIterator();
         while (itr.hasNext()) {
@@ -96,6 +99,44 @@ public class DLinkedListTest1 {
         equals();
     }
 
+    @Test
+    public void testContainsAll(){
+        System.out.println("Contains All");
+        addElements(list1, Size);
+        addElements(list2, Size);
+        List<Integer> test1 = new ArrayList<>();
+        while(test1.size() < 100) {
+            int v = (int) (Math.random() * Size);
+            if(!test1.contains(v)) test1.add(v);
+        }
+        
+        List<Integer> test2 = new ArrayList<>();
+        while(test2.size() < 100) {
+            int v = (int) (Math.random() * Size);
+            if(!test2.contains(v)) test2.add(v);
+        }
+        test2.add(Integer.MAX_VALUE);
+        
+        Clock clock = new Clock();
+        boolean successValue1 = list1.containsAll(test1);
+        boolean failValue1 = list1.containsAll(test2);
+        clock.stop();
+        System.out.println(clock);
+
+        clock.start();
+        boolean successValue2 = list2.containsAll(test1);
+        boolean failValue2 = list2.containsAll(test2);
+        clock.stop();
+        System.out.println(clock);
+
+        assertTrue(successValue1);
+        assertTrue(successValue2);
+        assertFalse(failValue1);
+        assertFalse(failValue2);
+        
+        equals();
+    }
+    
     @Test
     public void testRemoveListItem() {
         System.out.println("Removing");
