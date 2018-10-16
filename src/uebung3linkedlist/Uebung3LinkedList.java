@@ -20,7 +20,8 @@ public class Uebung3LinkedList {
         dlnikList.add(1);
         dlnikList.add(2);
         dlnikList.add(3);
-        dlnikList.reverse();
+        Object o= dlnikList.head();
+        dlnikList.remove(o);
     }
 
 }
